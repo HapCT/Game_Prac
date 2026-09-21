@@ -6,6 +6,7 @@ using static State;
 
 public class EnemyController : MonoBehaviour
 {
+
     [SerializeField] Vector2 _start, _end;
     [SerializeField] float _speed, _force;
     Rigidbody2D _rigi;
@@ -27,7 +28,6 @@ public class EnemyController : MonoBehaviour
              _start,
              _end
          };
-            
     }
 
     // Update is called once per frame
@@ -35,9 +35,9 @@ public class EnemyController : MonoBehaviour
     {
         if (_isDead == true)
         { return; }
-            
+
         this.transform.position = Vector2.MoveTowards(this.transform.position, _points[_currentPoint], _speed * Time.deltaTime);
-        if(Vector2.Distance(this.transform.position, _points[_currentPoint]) < 0.5f)
+        if (Vector2.Distance(this.transform.position, _points[_currentPoint]) < 0.5f)
         {
             _currentPoint += _direction;
             if (_currentPoint == _points.Length - 1)
@@ -72,17 +72,17 @@ public class EnemyController : MonoBehaviour
             enemy = State.EnemyState.idle;
         }
 
-        
+
     }
     void DieJump()
     {
         _rigi.linearVelocity = new Vector2(0, _force);
-        _rigi.freezeRotation = false ;
+        _rigi.freezeRotation = false;
         _rigi.angularVelocity = 500f;
 
         Invoke(nameof(ShowOver), 2f);
     }
-    
+
     void Die()
     {
         _isDead = true;
@@ -93,10 +93,15 @@ public class EnemyController : MonoBehaviour
     void ShowOver()
     {
         gameObject.SetActive(false);
+
+        if (FinishController.instance != null)
+        {
+            FinishController.instance.CheckEnemyDie();
+        }
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(!collision.gameObject.CompareTag("Player"))
+        if (!collision.gameObject.CompareTag("Player"))
         {
             return;
         }
@@ -106,7 +111,7 @@ public class EnemyController : MonoBehaviour
             {
                 Die();
                 return;
-            }    
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] GameObject _gameOverUI;
     private static GameManager _instance;
     public static GameManager instance => _instance;
     [SerializeField] Transform _spawnPlayer;
@@ -23,6 +24,7 @@ public class GameManager : MonoBehaviour
             return;
         }
         maxLevels = PlayerPrefs.GetInt("MaxLevel", 1);
+
     }
     public void LoadLevel(int level)
     {
@@ -34,20 +36,29 @@ public class GameManager : MonoBehaviour
     }
     public void FinishController()
     {
-        int currentLevel = SceneManager.GetActiveScene().buildIndex;
+        string sceneName = SceneManager.GetActiveScene().name;
+
+        int currentLevel = int.Parse(sceneName.Replace("Level", ""));
+
         CompleteLevel(currentLevel);
     }
 
 
     public void CompleteLevel(int level)
     {
+        int nextLevel = level + 1;
+        if (nextLevel > 3)
+        {
+            _gameOverUI.SetActive(true);
+            return;
+        }
         if (level >= maxLevels)
         {
-            maxLevels = level + 1;
+            maxLevels = nextLevel;
             PlayerPrefs.SetInt("MaxLevel", maxLevels);
             PlayerPrefs.Save();
         }
-        SceneManager.LoadScene("Level" + level + 1);
+        SceneManager.LoadScene("Level" + nextLevel);
     }
     public bool IsLevelUnlocked(int level)
     {
